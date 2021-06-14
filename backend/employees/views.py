@@ -5,6 +5,7 @@ from rest_framework.status import HTTP_200_OK
 
 from employees.models import Employee, EmployeeSkill
 from employees.serializer import EmployeeSerializer, EmployeeSkillSerializer
+from algorithms.algorithms import exponential_weight_algorithm
 
 
 class EmployeesViewSet(viewsets.ViewSet):
@@ -53,6 +54,8 @@ class EmployeeSkillViewSet(viewsets.ViewSet):
         return Response(emp_dict, status=HTTP_200_OK)
 
 
-# class GetSkillWeightViewSet(viewsets.ViewSet):
-#     def create(self, request):
-#         weight = exponential_weight_algorithm(db_session, request)
+class GetSkillWeightViewSet(viewsets.ViewSet):
+    def create(self, request):
+        weight = exponential_weight_algorithm(request)
+
+        return Response([i for i in weight])

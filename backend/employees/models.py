@@ -24,5 +24,3 @@ class EmployeeSkill(models.Model):
     class Meta:
         verbose_name = 'EmployeeSkill'
         verbose_name_plural = 'EmployeeSkills'
-
-

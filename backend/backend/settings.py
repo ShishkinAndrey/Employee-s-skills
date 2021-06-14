@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 
     'employees',
     'skills',
+    'algorithms',
 ]
 
 MIDDLEWARE = [
