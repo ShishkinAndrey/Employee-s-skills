@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db import models
 
-from employees.models import Employee
+from employees.models import Employee, EmployeeSkill
 
 
 @admin.register(Employee)
@@ -14,3 +14,14 @@ class EmployeeAdmin(admin.ModelAdmin):
 
     class Meta:
         model = Employee
+
+
+@admin.register(EmployeeSkill)
+class EmployeeSkillAdmin(admin.ModelAdmin):
+
+    fields = ('employee_id', 'skill_id', 'seniority_level')
+    list_display = ('employee_id', 'skill_id', 'seniority_level')
+    search_fields = ('employee_id',)
+
+    class Meta:
+        model = EmployeeSkill
