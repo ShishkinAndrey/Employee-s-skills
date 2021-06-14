@@ -55,7 +55,6 @@ class EmployeeSkillViewSet(viewsets.ViewSet):
 
 
 class GetSkillWeightViewSet(viewsets.ViewSet):
-    def create(self, request):
+    def update(self, request):
         weight = exponential_weight_algorithm(request)
-
         return Response([i for i in weight])

@@ -65,7 +65,6 @@ def exponential_weight_algorithm(request):
                 if type(is_main) == bool:
                     query_dict[emp_id]['weight'] *= math.exp(-1)
     # normalization
-
     min_res = min(query_dict.items(), key=lambda x: x[1]['weight'])[1]['weight']
     max_res = max(query_dict.items(), key=lambda x: x[1]['weight'])[1]['weight']
     delta = max_res - min_res

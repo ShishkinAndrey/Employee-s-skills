@@ -11,11 +11,11 @@ from .views import (
 urlpatterns = format_suffix_patterns(
     [
         path('get_employees/', EmployeesViewSet.as_view({'get': 'list'})),
-        path('get_employee/<int:pk>/', EmployeesViewSet.as_view({'get': 'retrieve'})),
+        path('get_employees/<int:pk>/', EmployeesViewSet.as_view({'get': 'retrieve'})),
 
         path('get_employees_skills/', EmployeeSkillViewSet.as_view({'get': 'list'})),
         path('get_employees_skills/<int:pk>/', EmployeeSkillViewSet.as_view({'get': 'retrieve'})),
 
-        path('get_employees_weight', GetSkillWeightViewSet.as_view({'put': 'create'})),
+        path('get_employees_weight/', GetSkillWeightViewSet.as_view({'put': 'update'})),
     ]
 )
