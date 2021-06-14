@@ -1,39 +1,55 @@
 from rest_framework import viewsets, views
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.exceptions import NotFound
+from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
+
 from employees.models import Employee, EmployeeSkill
 from employees.serializer import EmployeeSerializer, EmployeeSkillSerializer
+from django.shortcuts import get_object_or_404
 
 
-class EmployeesViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Employee.objects.all()
-    serializer_class = EmployeeSerializer
-    permission_classes = [IsAuthenticated, ]
-#
-#
-# class EmployeesSkillsViewSet(viewsets.ReadOnlyModelViewSet):
-#     queryset = EmployeeSkill.objects.all()
-#     serializer_class = EmployeeSkillSerializer
-#     permission_classes = [IsAuthenticated, ]
+class EmployeesViewSet(viewsets.ViewSet):
+    def list(self, request):
+        queryset = Employee.objects.all()
+        serializer = EmployeeSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        queryset = Employee.objects.all()
+        employee = get_object_or_404(queryset, pk=pk)
+        serializer = EmployeeSerializer(employee)
+        return Response(serializer.data)
 
 
-# class EmployeesViewSet(views.APIView):
-#     def get(self, request, format=None):
-#         snippets = Employee.objects.all()
-#         serializer = EmployeeSerializer(snippets, many=True)
-#         return Response(serializer.data)
+class EmployeeSkillViewSet(viewsets.ViewSet):
+    def list(self, request):
+        employees_list = []
+        get_employees = Employee.objects.all()
+        serializer_employee = EmployeeSerializer(get_employees, many=True)
+        for row in serializer_employee.data:
+            get_employees_skills = EmployeeSkill.objects.filter(employee_id=row['id'])
+            serializer_employees_skills = EmployeeSkillSerializer(get_employees_skills, many=True)
+            emp_dict = {
+                'employee_id': row['id'],
+                'firstname': row['firstname'],
+                'lastname': row['lastname'],
+            }
+            if get_employees_skills:
+                emp_dict['skills'] = serializer_employees_skills.data
+            employees_list.append(emp_dict)
+        return Response(employees_list, status=HTTP_200_OK)
 
+    def retrieve(self, request, pk=None):
+        queryset = Employee.objects.all()
+        get_employee = get_object_or_404(queryset, pk=pk)
+        serializer_employee = EmployeeSerializer(get_employee)
+        get_employee_skills = EmployeeSkill.objects.filter(employee_id=pk)
+        serializer_employee_skills = EmployeeSkillSerializer(get_employee_skills, many=True)
+        emp_dict = {
+            'employee_id': serializer_employee.data['id'],
+            'firstname': serializer_employee.data['firstname'],
+            'lastname': serializer_employee.data['lastname'],
+            'skills': serializer_employee_skills.data,
+        }
+        return Response(emp_dict, status=HTTP_200_OK)
 
-# class DetailedEmployeesViewSet(views.APIView):
-#     def get_object(self, pk):
-#         try:
-#             return Employee.objects.get(pk=pk)
-#         except Employee.DoesNotExist:
-#             raise NotFound
-#
-#     def get(self, request, pk):
-#         snippet = self.get_object(pk)
-#         serializer = EmployeeSerializer(snippet)
-#         return Response(serializer.data)
