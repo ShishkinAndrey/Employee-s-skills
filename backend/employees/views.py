@@ -2,14 +2,38 @@ from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 from employees.models import Employee, EmployeeSkill
 from employees.serializer import EmployeeSerializer, EmployeeSkillSerializer
 from algorithms.algorithms import exponential_weight_algorithm
 
+response_schema_dict = {
+    "200": openapi.Response(
+        description="200: Successfully read list of employees",
+        examples={
+            "application/json": {
+                "firstname": "string",
+                "lastname": "string",
+                "employee_email": "string"
+            }
+        }
+    ),
+}
 
 class EmployeesViewSet(viewsets.ViewSet):
+    # @swagger_auto_schema(responses=response_schema_dict)
     def list(self, request):
+        """ Read all
+            ---
+            get:
+              operationId: current_app.categories.read_all_category
+              tags:
+                - Categories
+              summary: Get list of categories
+              description: Get list of categories
+        """
         queryset = Employee.objects.all()
         serializer = EmployeeSerializer(queryset, many=True)
         return Response(serializer.data)
