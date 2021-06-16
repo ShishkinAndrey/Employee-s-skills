@@ -40,7 +40,7 @@ class EmployeesViewSet(viewsets.ViewSet):
     def list(self, request):
         queryset = Employee.objects.all()
         serializer = EmployeeSerializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response({'data': serializer.data})
 
     @swagger_auto_schema(
         operation_description="Method GET to get one employee",
