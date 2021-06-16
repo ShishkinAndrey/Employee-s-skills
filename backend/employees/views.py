@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-from django.utils.decorators import method_decorator
 from rest_framework.permissions import IsAuthenticated
+
 from employees.models import Employee, EmployeeSkill
 from employees.serializer import EmployeeSerializer, EmployeeSkillSerializer
 from algorithms.algorithms import exponential_weight_algorithm
