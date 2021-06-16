@@ -1,43 +1,56 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-
+from django.utils.decorators import method_decorator
+from rest_framework.permissions import IsAuthenticated
 from employees.models import Employee, EmployeeSkill
 from employees.serializer import EmployeeSerializer, EmployeeSkillSerializer
 from algorithms.algorithms import exponential_weight_algorithm
 
-response_schema_dict = {
-    "200": openapi.Response(
+employee_response_list = {
+    status.HTTP_200_OK: openapi.Response(
         description="200: Successfully read list of employees",
         examples={
-            "application/json": {
-                "firstname": "string",
-                "lastname": "string",
-                "employee_email": "string"
-            }
-        }
-    ),
+            "application/json":
+                {'data': [
+                    {
+                        "id": 0,
+                        "firstname": "string",
+                        "lastname": "string",
+                        "employee_email": "user@example.com"
+                    }
+                ]
+                }
+        },
+        schema=EmployeeSerializer
+    )
 }
 
+
 class EmployeesViewSet(viewsets.ViewSet):
-    # @swagger_auto_schema(responses=response_schema_dict)
+    permission_classes = [IsAuthenticated, ]
+    @swagger_auto_schema(
+        operation_description="Method GET to get all employees",
+        operation_summary="Get all employees",
+        tags=['Employees'],
+        responses=employee_response_list)
     def list(self, request):
-        """ Read all
-            ---
-            get:
-              operationId: current_app.categories.read_all_category
-              tags:
-                - Categories
-              summary: Get list of categories
-              description: Get list of categories
-        """
         queryset = Employee.objects.all()
         serializer = EmployeeSerializer(queryset, many=True)
         return Response(serializer.data)
 
+    @swagger_auto_schema(
+        operation_description="Method GET to get one employee",
+        operation_summary="Get one employee",
+        tags=['Employees'],
+        manual_parameters=[openapi.Parameter('id',
+                                             openapi.IN_PATH,
+                                             description="id of Employee",
+                                             type=openapi.TYPE_INTEGER)],
+        responses={'200': EmployeeSerializer},)
     def retrieve(self, request, pk=None):
         queryset = Employee.objects.all()
         employee = get_object_or_404(queryset, pk=pk)
