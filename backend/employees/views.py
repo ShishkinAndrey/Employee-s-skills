@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, status
+from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK
 from drf_yasg.utils import swagger_auto_schema
@@ -9,25 +9,7 @@ from rest_framework.permissions import IsAuthenticated
 from employees.models import Employee, EmployeeSkill
 from employees.serializer import EmployeeSerializer, EmployeeSkillSerializer
 from algorithms.algorithms import exponential_weight_algorithm
-
-employee_response_list = {
-    status.HTTP_200_OK: openapi.Response(
-        description="200: Successfully read list of employees",
-        examples={
-            "application/json":
-                {'data': [
-                    {
-                        "id": 0,
-                        "firstname": "string",
-                        "lastname": "string",
-                        "employee_email": "user@example.com"
-                    }
-                ]
-                }
-        },
-        schema=EmployeeSerializer
-    )
-}
+from .responses import employee_response_list
 
 
 class EmployeesViewSet(viewsets.ViewSet):
@@ -36,7 +18,7 @@ class EmployeesViewSet(viewsets.ViewSet):
         operation_description="Method GET to get all employees",
         operation_summary="Get all employees",
         tags=['Employees'],
-        responses=employee_response_list)
+        responses=employee_response_list['employees'])
     def list(self, request):
         queryset = Employee.objects.all()
         serializer = EmployeeSerializer(queryset, many=True)
@@ -59,6 +41,13 @@ class EmployeesViewSet(viewsets.ViewSet):
 
 
 class EmployeeSkillViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated, ]
+
+    @swagger_auto_schema(
+        operation_description="Method GET to get all employees skills",
+        operation_summary="Get all employees skills",
+        tags=['Employees Skills'],
+        responses=employee_response_list['employees_skills'])
     def list(self, request):
         employees_list = []
         get_employees = Employee.objects.all()
@@ -74,8 +63,17 @@ class EmployeeSkillViewSet(viewsets.ViewSet):
             if get_employees_skills:
                 emp_dict['skills'] = serializer_employees_skills.data
             employees_list.append(emp_dict)
-        return Response(employees_list, status=HTTP_200_OK)
+        return Response({'data': employees_list}, status=HTTP_200_OK)
 
+    @swagger_auto_schema(
+        operation_description="Method GET to get employee skills",
+        operation_summary="Get employee skills",
+        tags=['Employees Skills'],
+        manual_parameters=[openapi.Parameter('id',
+                                             openapi.IN_PATH,
+                                             description="id of Employee",
+                                             type=openapi.TYPE_INTEGER)],
+        responses=employee_response_list['employee_skills'])
     def retrieve(self, request, pk=None):
         queryset = Employee.objects.all()
         get_employee = get_object_or_404(queryset, pk=pk)
