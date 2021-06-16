@@ -1,21 +1,12 @@
-from django.urls import path
-from rest_framework.urlpatterns import format_suffix_patterns
-
+from rest_framework.routers import DefaultRouter
 from .views import (
     EmployeesViewSet,
     EmployeeSkillViewSet,
     GetSkillWeightViewSet,
 )
 
-
-urlpatterns = format_suffix_patterns(
-    [
-        path('get_employees/', EmployeesViewSet.as_view({'get': 'list'})),
-        path('get_employees/<int:pk>/', EmployeesViewSet.as_view({'get': 'retrieve'})),
-
-        path('get_employees_skills/', EmployeeSkillViewSet.as_view({'get': 'list'})),
-        path('get_employees_skills/<int:pk>/', EmployeeSkillViewSet.as_view({'get': 'retrieve'})),
-
-        path('get_employees_weight/', GetSkillWeightViewSet.as_view({'put': 'update'})),
-    ]
-)
+router = DefaultRouter()
+router.register(r'get_employees', EmployeesViewSet, basename='employees')
+router.register(r'get_employees_skills', EmployeeSkillViewSet, basename='employees_skills')
+router.register(r'get_employees_weight', GetSkillWeightViewSet, basename='employees_weight')
+urlpatterns = router.urls
