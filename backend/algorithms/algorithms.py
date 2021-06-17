@@ -27,14 +27,14 @@ import math
 
 
 def exponential_weight_algorithm(request):
-    skills_list = [i['id'] for i in request.data]
+    request_data = request.data['data']
+    skills_list = [i['id'] for i in request_data]
     emp_skills = EmployeeSkill.objects.filter(skill_id__id__in=skills_list)
 
     # if not emp_skills:
     #     return not_found('Skills not found')
     query_dict: dict = {}
     k_optional = 1.2
-    request_data = request.data
 
     for row in emp_skills:
         if row.employee_id.id in query_dict.keys():

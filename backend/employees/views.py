@@ -90,6 +90,27 @@ class EmployeeSkillViewSet(viewsets.ViewSet):
 
 
 class GetSkillWeightViewSet(viewsets.ViewSet):
-    def update(self, request):
+    @swagger_auto_schema(
+        operation_description="Calculate correspondence of employee skills to requested vacation",
+        operation_summary="Calculate correspondence of employee skills to requested vacation",
+        tags=['Employees Skills'],
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'data': openapi.Schema(
+                    type=openapi.TYPE_ARRAY,
+                    items=openapi.Schema(
+                        type=openapi.TYPE_OBJECT,
+                        properties={
+                            'id': openapi.Schema(type=openapi.TYPE_INTEGER, description='0'),
+                            'seniority': openapi.Schema(type=openapi.TYPE_INTEGER, description='0'),
+                            'is_main': openapi.Schema(type=openapi.TYPE_BOOLEAN, description='true'),
+                        }
+                    )
+                )
+            }
+        )
+    )
+    def create(self, request):
         weight = exponential_weight_algorithm(request)
         return Response([i for i in weight])
