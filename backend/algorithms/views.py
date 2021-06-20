@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from algorithms.models import Preset, RequestSkill
 from algorithms.serializer import PresetSerializer, RequestSkillSerializer
-# from .responses import employee_response_list
+from .responses import preset_response_list
 from skills.models import Skill
 
 
@@ -18,15 +18,16 @@ class PresetViewSet(viewsets.ViewSet):
     @swagger_auto_schema(
         operation_description="Method GET to get all presets",
         operation_summary="Get all presets",
-        tags=['Presets'])
+        tags=['Presets'],
+        responses=preset_response_list['get_presets'])
     def list(self, request):
         presets_list = []
         get_presets = Preset.objects.all().values('id', 'name', 'description')
         for row in get_presets:
             get_request_skills = RequestSkill.objects\
                 .filter(preset_id=row['id'])\
-                .values('seniority_level',
-                        'skill_id',
+                .values('skill_id',
+                        'seniority_level',
                         'is_main'
                         )
 
