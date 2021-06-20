@@ -55,12 +55,16 @@ class EmployeeSkillViewSet(viewsets.ViewSet):
         employees_list = []
         get_employees = Employee.objects.all().values('id', 'firstname', 'lastname')
         for row in get_employees:
-            get_employees_skills = EmployeeSkill.objects.filter(employee_id=row['id']).values('seniority_level',
-                                                                                              'skill_id'
-                                                                                              )
+            get_employees_skills = EmployeeSkill.objects\
+                .filter(employee_id=row['id'])\
+                .values('seniority_level',
+                        'skill_id'
+                        )
             emp_dict = row
             if get_employees_skills:
                 emp_dict['skills'] = get_employees_skills
+            else:
+                emp_dict['skills'] = []
             employees_list.append(emp_dict)
         return Response({'data': employees_list}, status=HTTP_200_OK)
 
