@@ -22,5 +22,5 @@ class RequestSkill(models.Model):
     seniority_level = models.IntegerField(null=False)
 
     class Meta:
-        verbose_name = 'EmployeeSkill'
-        verbose_name_plural = 'EmployeeSkills'
+        verbose_name = 'RequestSkill'
+        verbose_name_plural = 'RequestSkill'
