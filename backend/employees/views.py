@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 
 from employees.models import Employee, EmployeeSkill
-from employees.serializer import EmployeeSerializer, EmployeeSkillSerializer, AddEmployeeSkillSerializer
+from employees.serializer import EmployeeSerializer, EmployeeSkillSerializer, AddEditEmployeeSkillSerializer
 from algorithms.algorithms import exponential_weight_algorithm, normalized_weight_algorithm
 from .responses import employee_response_list
 from skills.models import Skill
@@ -87,7 +87,7 @@ class EmployeeSkillViewSet(viewsets.ViewSet):
         return Response(emp_dict, status=HTTP_200_OK)
 
     @swagger_auto_schema(
-        operation_description="Method POST to add skills to employee",
+        operation_description="Method to add skills to employee",
         operation_summary="Add skills to employee",
         tags=['Employees Skills'],
         manual_parameters=[openapi.Parameter('emp_id',
@@ -127,7 +127,7 @@ class EmployeeSkillViewSet(viewsets.ViewSet):
             if emp_skill_model:
                 return Response('Skill already exists', status=HTTP_400_BAD_REQUEST)
 
-            new_model = AddEmployeeSkillSerializer(data=i)
+            new_model = AddEditEmployeeSkillSerializer(data=i)
             if new_model.is_valid():
                 new_model.save(employee_id=query_emp, skill_id=query_skill)
                 created_ids.append(new_model.data['id'])
@@ -136,18 +136,74 @@ class EmployeeSkillViewSet(viewsets.ViewSet):
         return Response({'Created ids': created_ids}, status=HTTP_200_OK)
 
     @swagger_auto_schema(
-        tags=['Employees Skills'])
-    def edit(self, request, emp_id, skill_id):
+        operation_description="Method to edit employee skill",
+        operation_summary="Edit employee skill",
+        tags=['Employees Skills'],
+        manual_parameters=[openapi.Parameter('emp_id',
+                                             openapi.IN_PATH,
+                                             description="id of Employee",
+                                             type=openapi.TYPE_INTEGER),
+                           openapi.Parameter('skill_id',
+                                             openapi.IN_PATH,
+                                             description="id of Skill",
+                                             type=openapi.TYPE_INTEGER)
+                           ],
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'seniority_level': openapi.Schema(type=openapi.TYPE_INTEGER, description='0'),
+            }
+        ),
+        responses=employee_response_list['add_employee_skills'])
+    def partial_update(self, request, emp_id, skill_id):
+        query_emp = Employee.objects.filter(pk=emp_id).first()
+        if not query_emp:
+            return Response('Employee not found', status=HTTP_404_NOT_FOUND)
+        query_skill = Skill.objects.filter(pk=skill_id).first()
+        if not query_skill:
+            return Response('Skill not found', status=HTTP_404_NOT_FOUND)
+
         model = EmployeeSkill.objects.filter(employee_id=emp_id).filter(skill_id=skill_id).first()
-        print(model)
         if not model:
-            return Response(status=HTTP_404_NOT_FOUND)
-        serializer = EmployeeSkillSerializer(model, data=request.data, partial=True)
+            return Response('Employee with current skill_id not found', status=HTTP_404_NOT_FOUND)
+
+        serializer = AddEditEmployeeSkillSerializer(model, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=HTTP_200_OK)
+            return Response({'Edited id': model.id}, status=HTTP_200_OK)
         else:
             return Response('Incorrect data', status=HTTP_400_BAD_REQUEST)
+
+    @swagger_auto_schema(
+        operation_description="Method to delete employee skill",
+        operation_summary="Delete employee skill",
+        tags=['Employees Skills'],
+        manual_parameters=[openapi.Parameter('emp_id',
+                                             openapi.IN_PATH,
+                                             description="id of Employee",
+                                             type=openapi.TYPE_INTEGER),
+                           openapi.Parameter('skill_id',
+                                             openapi.IN_PATH,
+                                             description="id of Skill",
+                                             type=openapi.TYPE_INTEGER)
+                           ],
+        responses=employee_response_list['delete_employee_skills'])
+    def destroy(self, request, emp_id, skill_id):
+        query_emp = Employee.objects.filter(pk=emp_id).first()
+        if not query_emp:
+            return Response('Employee not found', status=HTTP_404_NOT_FOUND)
+        query_skill = Skill.objects.filter(pk=skill_id).first()
+        if not query_skill:
+            return Response('Skill not found', status=HTTP_404_NOT_FOUND)
+
+        model = EmployeeSkill.objects.filter(employee_id=emp_id).filter(skill_id=skill_id).first()
+        id = model.id
+        if not model:
+            return Response('Employee with current skill_id not found', status=HTTP_404_NOT_FOUND)
+        else:
+            model.delete()
+        return Response({'Deleted id': id}, status=HTTP_200_OK)
+
 
 class GetSkillWeightViewSet(viewsets.ViewSet):
     @swagger_auto_schema(

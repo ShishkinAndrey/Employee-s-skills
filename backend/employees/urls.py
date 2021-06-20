@@ -15,7 +15,8 @@ router.register(r'get_employees_weight', GetSkillWeightViewSet, basename='employ
 urlpatterns = [
     path('', include(router.urls)),
     path('get_employees_skills/', EmployeeSkillViewSet.as_view({'get': 'list'})),
-    path('get_employees_skills/<int:pk>', EmployeeSkillViewSet.as_view({'get': 'retrieve'})),
-    path('add_employee_skills/<int:emp_id>', EmployeeSkillViewSet.as_view({'post': 'update'})),
-    path('edit_employee_skills/<int:emp_id>/<int:skill_id>', EmployeeSkillViewSet.as_view({'patch': 'edit'})),
+    path('get_employee_skill/<int:pk>', EmployeeSkillViewSet.as_view({'get': 'retrieve'})),
+    path('add_skills/<int:emp_id>', EmployeeSkillViewSet.as_view({'post': 'update'})),
+    path('edit_skill/<int:emp_id>/<int:skill_id>', EmployeeSkillViewSet.as_view({'patch': 'partial_update'})),
+    path('delete_skill/<int:emp_id>/<int:skill_id>', EmployeeSkillViewSet.as_view({'delete': 'destroy'})),
 ]

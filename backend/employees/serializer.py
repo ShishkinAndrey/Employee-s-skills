@@ -15,7 +15,7 @@ class EmployeeSkillSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class AddEmployeeSkillSerializer(serializers.ModelSerializer):
+class AddEditEmployeeSkillSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmployeeSkill
         exclude = ('employee_id', 'skill_id')
