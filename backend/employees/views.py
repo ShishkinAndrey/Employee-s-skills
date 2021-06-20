@@ -5,7 +5,6 @@ from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND, HTTP_400_BAD_
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import action
 
 from employees.models import Employee, EmployeeSkill
 from employees.serializer import EmployeeSerializer, EmployeeSkillSerializer, AddEditEmployeeSkillSerializer
