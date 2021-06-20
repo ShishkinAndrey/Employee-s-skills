@@ -33,9 +33,7 @@ employee_response_list = {
                             "lastname": "string",
                             "skills": [
                                 {
-                                    "id": 0,
                                     "seniority_level": 0,
-                                    "employee_id": 0,
                                     "skill_id": 0
                                 }
                             ]
@@ -56,14 +54,39 @@ employee_response_list = {
                         "lastname": "string",
                         "skills": [
                             {
-                                "id": 0,
                                 "seniority_level": 0,
-                                "employee_id": 0,
                                 "skill_id": 0
                             },
                         ]
                     }
             }
         )
-    }
+    },
+    'add_employee_skills': {
+            status.HTTP_200_OK: openapi.Response(
+                description="200: Successfully add skills to employees skills",
+                examples={
+                    "application/json":
+                        {'Created id': 0}
+                }
+            ),
+            status.HTTP_404_NOT_FOUND: openapi.Response(
+                            description="404: Not Found",
+                            examples={
+                                "application/json":
+                                    ['Employee not found',
+                                     'Skill not found',
+                                     ]
+                            }
+            ),
+            status.HTTP_400_BAD_REQUEST: openapi.Response(
+                                        description="400: Bad Request",
+                                        examples={
+                                            "application/json":
+                                                ['Skill already exists',
+                                                 'Incorrect data',
+                                                 ]
+                                        }
+                        )
+        },
 }
