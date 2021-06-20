@@ -1,11 +1,12 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK
+from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.permissions import IsAuthenticated
-
+from django.forms.models import model_to_dict
+from skills.models import Skill
 from employees.models import Employee, EmployeeSkill
 from employees.serializer import EmployeeSerializer, EmployeeSkillSerializer
 from algorithms.algorithms import exponential_weight_algorithm
@@ -94,6 +95,15 @@ class GetSkillWeightViewSet(viewsets.ViewSet):
         operation_description="Calculate correspondence of employee skills to requested vacation",
         operation_summary="Calculate correspondence of employee skills to requested vacation",
         tags=['Employees Skills'],
+        manual_parameters=[openapi.Parameter(name='algorithm_name',
+                                             in_=openapi.IN_QUERY,
+                                             description="Choose an algorithm for calculation",
+                                             required=False,
+                                             type=openapi.TYPE_STRING,
+                                             enum=['exponential', 'normalized'],
+                                             default='exponential',
+                                             )
+                           ],
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
@@ -112,5 +122,35 @@ class GetSkillWeightViewSet(viewsets.ViewSet):
         )
     )
     def create(self, request):
-        weight = exponential_weight_algorithm(request)
-        return Response([i for i in weight])
+        algorithm_name = request.query_params['algorithm_name']
+        warning = None
+        weight_result = []
+
+        if not algorithm_name or algorithm_name not in ['exponential', 'normalized']:
+            warning = 'Algorithm name not provided or incorrect. Exponential algorithm is used'
+        if algorithm_name == 'normalized':
+            weight = None
+        else:
+            weight = exponential_weight_algorithm(request)
+
+        if not weight:
+            return Response('Skills not found', status=HTTP_404_NOT_FOUND)
+
+        for result in weight:
+            emp = Employee.objects.get(pk=result['id'])
+            query_dict = {
+                'id': result['id'],
+                'name': f'{emp.firstname} {emp.lastname}',
+                'skills': [],
+                'weight': result['weight'],
+            }
+            list_of_skills = [skill_in_request['id'] for skill_in_request in request.data['data']]
+            query_skill = EmployeeSkill.objects.\
+                filter(employee_id_id=result['id']).\
+                filter(skill_id__in=list_of_skills).select_related('skill').values('skill_id',
+                                                                                   'seniority_level')
+
+            if query_skill:
+                query_dict['skills'] = [row for row in query_skill]
+            weight_result.append(query_dict)
+        return Response({'data': weight_result, 'warning': warning})

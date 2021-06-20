@@ -25,7 +25,6 @@ import math
 # request_skill_main_coef = 1.0
 # request_skill_optional_coef = 0.2
 
-
 def exponential_weight_algorithm(request):
     request_data = request.data['data']
     skills_list = [i['id'] for i in request_data]
