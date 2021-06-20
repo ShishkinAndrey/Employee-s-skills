@@ -5,16 +5,16 @@ from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.permissions import IsAuthenticated
-from django.forms.models import model_to_dict
-from skills.models import Skill
+
 from employees.models import Employee, EmployeeSkill
 from employees.serializer import EmployeeSerializer, EmployeeSkillSerializer
-from algorithms.algorithms import exponential_weight_algorithm
+from algorithms.algorithms import exponential_weight_algorithm, normalized_weight_algorithm
 from .responses import employee_response_list
 
 
 class EmployeesViewSet(viewsets.ViewSet):
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated,]
+
     @swagger_auto_schema(
         operation_description="Method GET to get all employees",
         operation_summary="Get all employees",
@@ -129,7 +129,7 @@ class GetSkillWeightViewSet(viewsets.ViewSet):
         if not algorithm_name or algorithm_name not in ['exponential', 'normalized']:
             warning = 'Algorithm name not provided or incorrect. Exponential algorithm is used'
         if algorithm_name == 'normalized':
-            weight = None
+            weight = normalized_weight_algorithm(request)
         else:
             weight = exponential_weight_algorithm(request)
 
