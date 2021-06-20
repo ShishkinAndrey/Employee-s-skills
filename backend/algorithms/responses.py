@@ -28,20 +28,23 @@ preset_response_list = {
             }
         )
     },
-    'employee_skills': {
+    'get_one_preset': {
         status.HTTP_200_OK: openapi.Response(
-            description="200: Successfully read list of employees skills",
+            description="200: Successfully read one preset",
             examples={
                 "application/json":
                     {
-                        "employee_id": 0,
-                        "firstname": "string",
-                        "lastname": "string",
+                        "id": 0,
+                        "name": "string",
+                        "description": "string",
                         "skills": [
                             {
                                 "seniority_level": 0,
-                                "skill_id": 0
-                            },
+                                "skill_id": 0,
+                                "is_main": True,
+                                "skill": "string",
+                                "competency": "string"
+                            }
                         ]
                     }
             }

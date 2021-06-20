@@ -43,27 +43,36 @@ class PresetViewSet(viewsets.ViewSet):
             presets_list.append(row)
         return Response({'data': presets_list}, status=HTTP_200_OK)
 
-    # @swagger_auto_schema(
-    #     operation_description="Method GET to get employee skills",
-    #     operation_summary="Get employee skills",
-    #     tags=['Employees Skills'],
-    #     manual_parameters=[openapi.Parameter('id',
-    #                                          openapi.IN_PATH,
-    #                                          description="id of Employee",
-    #                                          type=openapi.TYPE_INTEGER)],
-    #     responses=employee_response_list['employee_skills'])
-    # def retrieve(self, request, pk=None):
-    #     queryset = Employee.objects.all().values('id', 'firstname', 'lastname')
-    #     get_employee = get_object_or_404(queryset, pk=pk)
-    #     get_employee_skills = EmployeeSkill.objects.filter(employee_id=pk).values('seniority_level',
-    #                                                                               'skill_id')
-    #     emp_dict = {
-    #         'employee_id': get_employee['id'],
-    #         'firstname': get_employee['firstname'],
-    #         'lastname': get_employee['lastname'],
-    #         'skills': get_employee_skills,
-    #     }
-    #     return Response(emp_dict, status=HTTP_200_OK)
+    @swagger_auto_schema(
+        operation_description="Method GET to get one preset",
+        operation_summary="Get one preset",
+        tags=['Presets'],
+        manual_parameters=[openapi.Parameter('id',
+                                             openapi.IN_PATH,
+                                             description="id of Preset",
+                                             type=openapi.TYPE_INTEGER)],
+        responses=preset_response_list['get_one_preset'])
+    def retrieve(self, request, pk=None):
+        queryset = Preset.objects.all().values('id', 'name', 'description')
+        get_preset = get_object_or_404(queryset, pk=pk)
+
+        get_request_skills = RequestSkill.objects \
+            .filter(preset_id=get_preset['id']) \
+            .values('skill_id',
+                    'seniority_level',
+                    'is_main'
+                    )
+
+        if get_request_skills:
+            get_preset['skills'] = get_request_skills
+            for skill in get_preset['skills']:
+                get_skills = Skill.objects.filter(pk=skill['skill_id']).first()
+                skill['skill'] = get_skills.skill
+                skill['competency'] = get_skills.competency
+        else:
+            get_preset['skills'] = []
+
+        return Response(get_preset, status=HTTP_200_OK)
 
     # @swagger_auto_schema(
     #     operation_description="Method to add skills to employee",
