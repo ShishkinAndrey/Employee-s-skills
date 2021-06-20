@@ -1,13 +1,13 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST
+from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST, HTTP_201_CREATED
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.permissions import IsAuthenticated
 
 from algorithms.models import Preset, RequestSkill
-from algorithms.serializer import PresetSerializer, RequestSkillSerializer
+from algorithms.serializer import PresetSerializer, RequestSkillSerializer, AddEditRequestSkillSerializer
 from .responses import preset_response_list
 from skills.models import Skill
 
@@ -74,13 +74,54 @@ class PresetViewSet(viewsets.ViewSet):
 
         return Response(get_preset, status=HTTP_200_OK)
 
+    @swagger_auto_schema(
+        operation_description="Method to add new preset",
+        operation_summary="Add new preset",
+        tags=['Presets'],
+        request_body = openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'name': openapi.Schema(type=openapi.TYPE_STRING, description='string'),
+                'description': openapi.Schema(type=openapi.TYPE_STRING, description='string'),
+                'skills': openapi.Schema(
+                    type=openapi.TYPE_ARRAY,
+                    items=openapi.Schema(
+                        type=openapi.TYPE_OBJECT,
+                        properties={
+                            'skill_id': openapi.Schema(type=openapi.TYPE_INTEGER, description='0'),
+                            'seniority_level': openapi.Schema(type=openapi.TYPE_INTEGER, description='0'),
+                            'is_main': openapi.Schema(type=openapi.TYPE_BOOLEAN, description='0'),
+                        }
+                    )
+                )
+            }
+        ),
+        responses=preset_response_list['add_preset'])
+    def create(self, request):
+        new_preset = PresetSerializer(data=request.data)
+        if new_preset.is_valid():
+            for i in request.data['skills']:
+                new_request_skill = AddEditRequestSkillSerializer(data=i)
+                if new_request_skill.is_valid():
+                    query_skill = Skill.objects.filter(pk=i['skill_id']).first()
+                    if not query_skill:
+                        return Response('Skill not found', status=HTTP_404_NOT_FOUND)
+                    new_preset.save()
+                    added_preset = Preset.objects.last()
+                    new_request_skill.save(preset_id=added_preset, skill_id=query_skill)
+                else:
+                    return Response('Incorrect request skill data', status=HTTP_400_BAD_REQUEST)
+            return Response({f'Created preset id {added_preset.id}'}, status=HTTP_201_CREATED)
+        return Response('Incorrect preset data', status=HTTP_400_BAD_REQUEST)
+
+
     # @swagger_auto_schema(
-    #     operation_description="Method to add skills to employee",
-    #     operation_summary="Add skills to employee",
-    #     tags=['Employees Skills'],
-    #     manual_parameters=[openapi.Parameter('emp_id',
+    #     operation_description="Method to add new preset",
+    #     operation_summary="Add new preset",
+    #     tags=['Presets'],
+    #     manual_parameters=[openapi.Parameter('id',
     #                                          openapi.IN_PATH,
-    #                                          description="id of Employee",
+    #                                          description="id of Preset",
     #                                          type=openapi.TYPE_INTEGER)],
     #     request_body=openapi.Schema(
     #         type=openapi.TYPE_OBJECT,

@@ -13,3 +13,9 @@ class RequestSkillSerializer(serializers.ModelSerializer):
     class Meta:
         model = RequestSkill
         fields = '__all__'
+
+
+class AddEditRequestSkillSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RequestSkill
+        exclude = ('preset_id', 'skill_id')

@@ -50,20 +50,19 @@ preset_response_list = {
             }
         )
     },
-    'add_employee_skills': {
+    'add_preset': {
             status.HTTP_200_OK: openapi.Response(
-                description="200: Successfully add skills to employee",
+                description="200: Successfully add new preset",
                 examples={
                     "application/json":
-                        {'Created id': 0}
+                        {'Created preset id': 0}
                 }
             ),
             status.HTTP_404_NOT_FOUND: openapi.Response(
                             description="404: Not Found",
                             examples={
                                 "application/json":
-                                    ['Employee not found',
-                                     'Skill not found',
+                                    ['Skill not found',
                                      ]
                             }
             ),
@@ -71,8 +70,8 @@ preset_response_list = {
                                         description="400: Bad Request",
                                         examples={
                                             "application/json":
-                                                ['Skill already exists',
-                                                 'Incorrect data',
+                                                ['Incorrect preset data',
+                                                 'Incorrect request skill data',
                                                  ]
                                         }
                         )
