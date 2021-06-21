@@ -118,7 +118,7 @@ employee_response_list = {
             },
     'delete_employee_skills': {
                     status.HTTP_200_OK: openapi.Response(
-                        description="200: Successfully edit employees skill",
+                        description="200: Successfully deleted employees skill",
                         examples={
                             "application/json":
                                 {'Deleted id': 0}
