@@ -76,7 +76,34 @@ preset_response_list = {
                                         }
                         )
         },
-    'edit_employee_skills': {
+    'add_skill_preset': {
+                status.HTTP_200_OK: openapi.Response(
+                    description="200: Successfully add new preset",
+                    examples={
+                        "application/json":
+                            {'Created preset id': 0}
+                    }
+                ),
+                status.HTTP_404_NOT_FOUND: openapi.Response(
+                                description="404: Not Found",
+                                examples={
+                                    "application/json":
+                                        ['Skill not found',
+                                         'Preset not found',
+                                         ]
+                                }
+                ),
+                status.HTTP_400_BAD_REQUEST: openapi.Response(
+                                            description="400: Bad Request",
+                                            examples={
+                                                "application/json":
+                                                    ['Incorrect data',
+                                                     'Skill in preset already exists',
+                                                     ]
+                                            }
+                            )
+            },
+    'edit_preset_skills': {
                 status.HTTP_200_OK: openapi.Response(
                     description="200: Successfully edit employees skill",
                     examples={
@@ -103,9 +130,9 @@ preset_response_list = {
                                             }
                             )
             },
-    'delete_employee_skills': {
+    'delete_preset': {
                     status.HTTP_200_OK: openapi.Response(
-                        description="200: Successfully edit employees skill",
+                        description="200: Successfully deleted preset",
                         examples={
                             "application/json":
                                 {'Deleted id': 0}
@@ -115,11 +142,28 @@ preset_response_list = {
                                     description="404: Not Found",
                                     examples={
                                         "application/json":
-                                            ['Employee not found',
-                                             'Skill not found',
-                                             'Employee with current skill_id not found',
+                                            ['Preset not found',
                                              ]
                                     }
                     ),
     },
+    'delete_skill_preset': {
+                        status.HTTP_200_OK: openapi.Response(
+                            description="200: Successfully deleted skill in preset",
+                            examples={
+                                "application/json":
+                                    {'Deleted id': 0}
+                            }
+                        ),
+                        status.HTTP_404_NOT_FOUND: openapi.Response(
+                                        description="404: Not Found",
+                                        examples={
+                                            "application/json":
+                                                ['Preset not found',
+                                                 'Skill not found',
+                                                 'Preset with current skill_id not found',
+                                                 ]
+                                        }
+                        ),
+        },
 }

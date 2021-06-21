@@ -16,7 +16,7 @@ class Preset(models.Model):
 
 
 class RequestSkill(models.Model):
-    preset_id = models.ForeignKey(Preset, verbose_name='preset', on_delete=models.PROTECT)
+    preset_id = models.ForeignKey(Preset, verbose_name='preset', on_delete=models.CASCADE)
     skill_id = models.ForeignKey(Skill, verbose_name='skill', on_delete=models.PROTECT)
     is_main = models.BooleanField(null=False)
     seniority_level = models.IntegerField(null=False)
