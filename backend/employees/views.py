@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from employees.models import Employee, EmployeeSkill
 from employees.serializer import EmployeeSerializer, EmployeeSkillSerializer, AddEditEmployeeSkillSerializer
-from algorithms.algorithms import exponential_weight_algorithm, normalized_weight_algorithm
+from employees.algorithms import exponential_weight_algorithm, normalized_weight_algorithm
 from .responses import employee_response_list
 from skills.models import Skill
 
@@ -212,7 +212,7 @@ class GetSkillWeightViewSet(viewsets.ViewSet):
     @swagger_auto_schema(
         operation_description="Calculate correspondence of employee skills to requested vacation",
         operation_summary="Calculate correspondence of employee skills to requested vacation",
-        tags=['Employees Skills'],
+        tags=['Employees Weight'],
         manual_parameters=[openapi.Parameter(name='algorithm_name',
                                              in_=openapi.IN_QUERY,
                                              description="Choose an algorithm for calculation",
