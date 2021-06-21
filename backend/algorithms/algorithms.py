@@ -3,9 +3,9 @@ from employees.models import EmployeeSkill, Employee
 import math
 
 
-def exponential_weight_algorithm(request):
-    request_data = request.data['data']
-    skills_list = [i['id'] for i in request_data]
+def exponential_weight_algorithm(query_request_skill):
+
+    skills_list = [i.skill_id.id for i in query_request_skill]
     emp_skills = EmployeeSkill.objects.filter(skill_id__id__in=skills_list)
 
     # if not emp_skills:
@@ -19,10 +19,10 @@ def exponential_weight_algorithm(request):
         else:
             query_dict[row.employee_id.id] = {row.skill_id.id: row.seniority_level, 'weight': 1}
 
-    for skill_request in request_data:
-        skill = skill_request['id']
-        seniority = skill_request['seniority']
-        is_main = skill_request['is_main']
+    for skill_request in query_request_skill:
+        skill = skill_request.skill_id.id
+        seniority = skill_request.seniority_level
+        is_main = skill_request.is_main
         for emp_id in query_dict:
             if skill in query_dict[emp_id].keys():
                 if is_main:

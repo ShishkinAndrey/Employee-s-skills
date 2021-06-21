@@ -7,10 +7,22 @@ from drf_yasg import openapi
 from rest_framework.permissions import IsAuthenticated
 
 from employees.models import Employee, EmployeeSkill
-from employees.serializer import EmployeeSerializer, EmployeeSkillSerializer, AddEditEmployeeSkillSerializer
-from employees.algorithms import exponential_weight_algorithm, normalized_weight_algorithm
+from employees.serializer import (
+    EmployeeSerializer,
+    EmployeeSkillSerializer,
+    AddEditEmployeeSkillSerializer
+)
+from employees.algorithms import (
+    exponential_weight_algorithm,
+    normalized_weight_algorithm
+)
+from algorithms.algorithms import (
+    exponential_weight_algorithm as exponential_weight_algorithm_preset,
+    normalized_weight_algorithm as normalized_weight_algorithm_preset,
+)
 from .responses import employee_response_list
 from skills.models import Skill
+from algorithms.models import Preset, RequestSkill
 
 
 class EmployeesViewSet(viewsets.ViewSet):
@@ -287,24 +299,22 @@ class PresetGetSkillWeightViewSet(viewsets.ViewSet):
                                              type=openapi.TYPE_STRING,
                                              enum=['exponential', 'normalized'],
                                              default='exponential',
-                                             ),
-                           openapi.Parameter('preset_id',
-                                             openapi.IN_PATH,
-                                             description="id of Preset",
-                                             type=openapi.TYPE_INTEGER)
-                           ],
+                                             )],
+        responses=employee_response_list['employees_weight']
     )
-    def create(self, request):
+    def update(self, request, pk=None):
         algorithm_name = request.query_params['algorithm_name']
+        query_request_skill = RequestSkill.objects.filter(preset_id=pk).all()
+
         warning = None
         weight_result = []
 
         if not algorithm_name or algorithm_name not in ['exponential', 'normalized']:
             warning = 'Algorithm name not provided or incorrect. Exponential algorithm is used'
         if algorithm_name == 'normalized':
-            weight = normalized_weight_algorithm(request)
+            weight = normalized_weight_algorithm_preset(query_request_skill)
         else:
-            weight = exponential_weight_algorithm(request)
+            weight = exponential_weight_algorithm_preset(query_request_skill)
 
         if not weight:
             return Response('Skills not found', status=HTTP_404_NOT_FOUND)
@@ -317,7 +327,7 @@ class PresetGetSkillWeightViewSet(viewsets.ViewSet):
                 'skills': [],
                 'weight': result['weight'],
             }
-            list_of_skills = [skill_in_request['id'] for skill_in_request in request.data['data']]
+            list_of_skills = [skill_in_request.skill_id.id for skill_in_request in query_request_skill]
             query_skill = EmployeeSkill.objects.\
                 filter(employee_id_id=result['id']).\
                 filter(skill_id__in=list_of_skills).select_related('skill').values('skill_id',
