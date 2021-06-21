@@ -135,4 +135,22 @@ employee_response_list = {
                                     }
                     ),
     },
+    'employees_weight': {
+            status.HTTP_200_OK: openapi.Response(
+                description="200: Successfully calculated correspondence of employees skills",
+                examples={
+                    "application/json":
+                        {
+                            "id": 0,
+                            "name": "string",
+                            "skills": [
+                                {
+                                    "seniority_level": 0,
+                                    "skill_id": 0
+                                },
+                            ]
+                        }
+                }
+            )
+        },
 }

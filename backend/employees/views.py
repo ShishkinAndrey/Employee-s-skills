@@ -237,7 +237,62 @@ class GetSkillWeightViewSet(viewsets.ViewSet):
                     )
                 )
             }
-        )
+        ),
+        responses=employee_response_list['employees_weight']
+    )
+    def create(self, request):
+        algorithm_name = request.query_params['algorithm_name']
+        warning = None
+        weight_result = []
+
+        if not algorithm_name or algorithm_name not in ['exponential', 'normalized']:
+            warning = 'Algorithm name not provided or incorrect. Exponential algorithm is used'
+        if algorithm_name == 'normalized':
+            weight = normalized_weight_algorithm(request)
+        else:
+            weight = exponential_weight_algorithm(request)
+
+        if not weight:
+            return Response('Skills not found', status=HTTP_404_NOT_FOUND)
+
+        for result in weight:
+            emp = Employee.objects.get(pk=result['id'])
+            query_dict = {
+                'id': result['id'],
+                'name': f'{emp.firstname} {emp.lastname}',
+                'skills': [],
+                'weight': result['weight'],
+            }
+            list_of_skills = [skill_in_request['id'] for skill_in_request in request.data['data']]
+            query_skill = EmployeeSkill.objects.\
+                filter(employee_id_id=result['id']).\
+                filter(skill_id__in=list_of_skills).select_related('skill').values('skill_id',
+                                                                                   'seniority_level')
+
+            if query_skill:
+                query_dict['skills'] = [row for row in query_skill]
+            weight_result.append(query_dict)
+        return Response({'data': weight_result, 'warning': warning})
+
+
+class PresetGetSkillWeightViewSet(viewsets.ViewSet):
+    @swagger_auto_schema(
+        operation_description="Calculate correspondence of employee skills to requested vacation using preset",
+        operation_summary="Calculate correspondence of employee skills to requested vacation using preset",
+        tags=['Employees Weight'],
+        manual_parameters=[openapi.Parameter(name='algorithm_name',
+                                             in_=openapi.IN_QUERY,
+                                             description="Choose an algorithm for calculation",
+                                             required=False,
+                                             type=openapi.TYPE_STRING,
+                                             enum=['exponential', 'normalized'],
+                                             default='exponential',
+                                             ),
+                           openapi.Parameter('preset_id',
+                                             openapi.IN_PATH,
+                                             description="id of Preset",
+                                             type=openapi.TYPE_INTEGER)
+                           ],
     )
     def create(self, request):
         algorithm_name = request.query_params['algorithm_name']
