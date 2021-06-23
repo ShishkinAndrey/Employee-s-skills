@@ -101,6 +101,8 @@ class PresetViewSet(viewsets.ViewSet):
         new_preset = PresetSerializer(data=request.data)
         if new_preset.is_valid():
             for i in request.data['skills']:
+                if i['seniority_level'] not in range(4):
+                    return Response('Incorrect seniority level value', status=HTTP_400_BAD_REQUEST)
                 new_request_skill = AddEditRequestSkillSerializer(data=i)
                 if new_request_skill.is_valid():
                     query_skill = Skill.objects.filter(pk=i['skill_id']).first()
@@ -145,6 +147,8 @@ class PresetViewSet(viewsets.ViewSet):
         if not query_preset:
             return Response('Preset not found', status=HTTP_404_NOT_FOUND)
         for i in request.data['data']:
+            if i['seniority_level'] not in range(4):
+                return Response('Incorrect seniority level value', status=HTTP_400_BAD_REQUEST)
             query_skill = Skill.objects.filter(pk=i['skill_id']).first()
             if not query_skill:
                 return Response('Skill not found', status=HTTP_404_NOT_FOUND)
@@ -187,6 +191,8 @@ class PresetViewSet(viewsets.ViewSet):
         responses=preset_response_list['edit_preset_skills']
         )
     def partial_update(self, request, preset_id, skill_id):
+        if request.data['seniority_level'] not in range(4):
+            return Response('Incorrect seniority level value', status=HTTP_400_BAD_REQUEST)
         query_preset = Preset.objects.filter(pk=preset_id).first()
         if not query_preset:
             return Response('Preset not found', status=HTTP_404_NOT_FOUND)

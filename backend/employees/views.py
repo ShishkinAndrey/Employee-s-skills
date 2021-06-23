@@ -170,7 +170,7 @@ class EmployeeSkillViewSet(viewsets.ViewSet):
                 'seniority_level': openapi.Schema(type=openapi.TYPE_INTEGER, description='0'),
             }
         ),
-        responses=employee_response_list['add_employee_skills'])
+        responses=employee_response_list['edit_employee_skills'])
     def partial_update(self, request, emp_id, skill_id):
         query_emp = Employee.objects.filter(pk=emp_id).first()
         if not query_emp:
@@ -258,7 +258,9 @@ class GetSkillWeightViewSet(viewsets.ViewSet):
         algorithm_name = request.query_params['algorithm_name']
         warning = None
         weight_result = []
-
+        for i in request.data['data']:
+            if i['seniority'] not in range(4):
+                return Response('Incorrect seniority level value', status=HTTP_400_BAD_REQUEST)
         if not algorithm_name or algorithm_name not in ['exponential', 'normalized']:
             warning = 'Algorithm name not provided or incorrect. Exponential algorithm is used'
         if algorithm_name == 'normalized':

@@ -157,7 +157,8 @@ employee_response_list = {
                 description="404: Not Found",
                 examples={
                     "application/json":
-                        ['Skills not found'
+                        ['Skills not found',
+                         'Incorrect seniority level value'
                          ]
                 }
             ),

@@ -72,6 +72,7 @@ preset_response_list = {
                                             "application/json":
                                                 ['Incorrect preset data',
                                                  'Incorrect request skill data',
+                                                 'Incorrect seniority level value'
                                                  ]
                                         }
                         )
@@ -99,6 +100,7 @@ preset_response_list = {
                                                 "application/json":
                                                     ['Incorrect data',
                                                      'Skill in preset already exists',
+                                                     'Incorrect seniority level value'
                                                      ]
                                             }
                             )
@@ -125,7 +127,8 @@ preset_response_list = {
                                             description="400: Bad Request",
                                             examples={
                                                 "application/json":
-                                                    'Incorrect data',
+                                                    ['Incorrect data',
+                                                     'Incorrect seniority level value']
 
                                             }
                             )
