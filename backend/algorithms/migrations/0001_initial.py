@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('skills', '0005_alter_skill_competency'),
+        ('skills', '0001_initial'),
     ]
 
     operations = [

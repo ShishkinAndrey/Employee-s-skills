@@ -4,7 +4,8 @@ from django.db import models
 class Competency(models.TextChoices):
     Python = 'Python', 'Python'
     Java = 'java', 'java'
-    JavaScript = 'JavaSctipt', 'JavaSctipt'
+    JavaScript = 'JavaScript', 'JavaScript'
+    Databases = 'Databases', 'Databases'
 
 
 class Skill(models.Model):
