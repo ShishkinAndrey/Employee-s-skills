@@ -85,6 +85,7 @@ employee_response_list = {
                                             "application/json":
                                                 ['Skill already exists',
                                                  'Incorrect data',
+                                                 'Incorrect seniority level value',
                                                  ]
                                         }
                         )

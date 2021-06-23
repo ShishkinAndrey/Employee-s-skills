@@ -10,8 +10,8 @@ from .views import (
 
 router = DefaultRouter()
 router.register(r'get_employees', EmployeesViewSet, basename='employees')
-router.register(r'get_employees_weight', GetSkillWeightViewSet, basename='employees_weight')
-router.register(r'get_employees_weight_with_preset', PresetGetSkillWeightViewSet, basename='employees_weight')
+# router.register(r'get_employees_weight', GetSkillWeightViewSet, basename='employees_weight')
+# router.register(r'get_employees_weight_with_preset', PresetGetSkillWeightViewSet, basename='employees_weight')
 
 urlpatterns = [
     path('', include(router.urls)),
@@ -20,4 +20,6 @@ urlpatterns = [
     path('add_skills/<int:emp_id>', EmployeeSkillViewSet.as_view({'post': 'update'})),
     path('edit_skill/<int:emp_id>/<int:skill_id>', EmployeeSkillViewSet.as_view({'patch': 'partial_update'})),
     path('delete_skill/<int:emp_id>/<int:skill_id>', EmployeeSkillViewSet.as_view({'delete': 'destroy'})),
+    path('get_employees_weight', GetSkillWeightViewSet.as_view({'post': 'create'})),
+    path('get_employees_weight_with_preset/<int:pk>', PresetGetSkillWeightViewSet.as_view({'post': 'create'})),
 ]

@@ -134,7 +134,8 @@ class EmployeeSkillViewSet(viewsets.ViewSet):
             query_skill = Skill.objects.filter(pk=i['skill_id']).first()
             if not query_skill:
                 return Response('Skill not found', status=HTTP_404_NOT_FOUND)
-
+            if i['seniority_level'] not in range(4):
+                return Response('Incorrect seniority level value', status=HTTP_400_BAD_REQUEST)
             emp_skill_model = EmployeeSkill.objects\
                 .filter(employee_id=emp_id)\
                 .filter(skill_id=i['skill_id'])\
@@ -181,7 +182,8 @@ class EmployeeSkillViewSet(viewsets.ViewSet):
         model = EmployeeSkill.objects.filter(employee_id=emp_id).filter(skill_id=skill_id).first()
         if not model:
             return Response('Employee with current skill_id not found', status=HTTP_404_NOT_FOUND)
-
+        if request.data['seniority_level'] not in range(4):
+            return Response('Incorrect seniority level value', status=HTTP_400_BAD_REQUEST)
         serializer = AddEditEmployeeSkillSerializer(model, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -302,7 +304,7 @@ class PresetGetSkillWeightViewSet(viewsets.ViewSet):
                                              )],
         responses=employee_response_list['preset_employees_weight']
     )
-    def update(self, request, pk=None):
+    def create(self, request, pk=None):
         algorithm_name = request.query_params['algorithm_name']
         query_request_skill = RequestSkill.objects.filter(preset_id=pk).all()
         if not query_request_skill:
