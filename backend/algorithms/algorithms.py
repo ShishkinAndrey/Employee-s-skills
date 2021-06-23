@@ -74,12 +74,11 @@ request_skill_main_coef = 1.0
 request_skill_optional_coef = 0.2
 
 
-def normalized_weight_algorithm(request):
-    s_requests = request.data['data']
-    request_list = [RequestSkillData(s['id'], s['seniority'], s['is_main']) for s in s_requests]
+def normalized_weight_algorithm(query_request_skill):
+    request_list = [RequestSkillData(s.skill_id.id, s.seniority_level, s.is_main) for s in query_request_skill]
     # gather employee data into single instance for more convenient usage in cycle
     e_skills: dict = {}
-    skills_list = [i['id'] for i in s_requests]
+    skills_list = [i.skill_id.id for i in query_request_skill]
     emp_skills = EmployeeSkill.objects.filter(skill_id__id__in=skills_list)
 
     for e_skill in emp_skills:
