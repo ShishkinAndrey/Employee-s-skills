@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 from skills.models import Skill
 
@@ -19,7 +20,11 @@ class Employee(models.Model):
 class EmployeeSkill(models.Model):
     employee_id = models.ForeignKey(Employee, verbose_name='employee', on_delete=models.PROTECT)
     skill_id = models.ForeignKey(Skill, verbose_name='skill', on_delete=models.PROTECT)
-    seniority_level = models.IntegerField()
+    seniority_level = models.IntegerField(validators=[
+        MaxValueValidator(3),
+        MinValueValidator(0)
+        ]
+    )
 
     class Meta:
         verbose_name = 'EmployeeSkill'
