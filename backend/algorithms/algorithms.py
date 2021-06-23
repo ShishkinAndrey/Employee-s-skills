@@ -8,8 +8,9 @@ def exponential_weight_algorithm(query_request_skill):
     skills_list = [i.skill_id.id for i in query_request_skill]
     emp_skills = EmployeeSkill.objects.filter(skill_id__id__in=skills_list)
 
-    # if not emp_skills:
-    #     return not_found('Skills not found')
+    if not emp_skills:
+        return []
+
     query_dict: dict = {}
     k_optional = 1.2
 

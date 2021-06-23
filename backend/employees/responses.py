@@ -151,6 +151,41 @@ employee_response_list = {
                             ]
                         }
                 }
-            )
+            ),
+            status.HTTP_404_NOT_FOUND: openapi.Response(
+                description="404: Not Found",
+                examples={
+                    "application/json":
+                        ['Skills not found'
+                         ]
+                }
+            ),
         },
+    'preset_employees_weight': {
+                status.HTTP_200_OK: openapi.Response(
+                    description="200: Successfully calculated correspondence of employees skills using preset",
+                    examples={
+                        "application/json":
+                            {
+                                "id": 0,
+                                "name": "string",
+                                "skills": [
+                                    {
+                                        "seniority_level": 0,
+                                        "skill_id": 0
+                                    },
+                                ]
+                            }
+                    }
+                ),
+                status.HTTP_404_NOT_FOUND: openapi.Response(
+                    description="404: Not Found",
+                    examples={
+                        "application/json":
+                            ['Skills in preset not found',
+                             'Employees with current skills not found'
+                             ]
+                    }
+                ),
+            },
 }

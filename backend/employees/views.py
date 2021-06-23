@@ -300,11 +300,13 @@ class PresetGetSkillWeightViewSet(viewsets.ViewSet):
                                              enum=['exponential', 'normalized'],
                                              default='exponential',
                                              )],
-        responses=employee_response_list['employees_weight']
+        responses=employee_response_list['preset_employees_weight']
     )
     def update(self, request, pk=None):
         algorithm_name = request.query_params['algorithm_name']
         query_request_skill = RequestSkill.objects.filter(preset_id=pk).all()
+        if not query_request_skill:
+            return Response('Skills in preset not found', status=HTTP_404_NOT_FOUND)
 
         warning = None
         weight_result = []
@@ -317,7 +319,7 @@ class PresetGetSkillWeightViewSet(viewsets.ViewSet):
             weight = exponential_weight_algorithm_preset(query_request_skill)
 
         if not weight:
-            return Response('Skills not found', status=HTTP_404_NOT_FOUND)
+            return Response('Employees with current skills not found', status=HTTP_404_NOT_FOUND)
 
         for result in weight:
             emp = Employee.objects.get(pk=result['id'])
