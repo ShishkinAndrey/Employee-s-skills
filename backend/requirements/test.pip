@@ -1,0 +1,3 @@
+-r base.pip
+factory-boy
+faker
