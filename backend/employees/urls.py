@@ -10,8 +10,6 @@ from .views import (
 
 router = DefaultRouter()
 router.register(r'get_employees', EmployeesViewSet, basename='employees')
-# router.register(r'get_employees_weight', GetSkillWeightViewSet, basename='employees_weight')
-# router.register(r'get_employees_weight_with_preset', PresetGetSkillWeightViewSet, basename='employees_weight')
 
 urlpatterns = [
     path('', include(router.urls)),
