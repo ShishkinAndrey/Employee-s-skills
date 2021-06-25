@@ -182,7 +182,7 @@ class EmployeeSkillViewSet(viewsets.ViewSet):
         model = EmployeeSkill.objects.filter(employee_id=emp_id).filter(skill_id=skill_id).first()
         if not model:
             return Response('Employee with current skill_id not found', status=HTTP_404_NOT_FOUND)
-        if request.data['seniority_level'] not in range(4):
+        if request.data['seniority_level'] not in range(1,4):
             return Response('Incorrect seniority level value', status=HTTP_400_BAD_REQUEST)
         serializer = AddEditEmployeeSkillSerializer(model, data=request.data, partial=True)
         if serializer.is_valid():
