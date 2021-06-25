@@ -288,7 +288,7 @@ class GetSkillWeightViewSet(viewsets.ViewSet):
             if query_skill:
                 query_dict['skills'] = [row for row in query_skill]
             weight_result.append(query_dict)
-        return Response({'data': weight_result, 'warning': warning})
+        return Response({'data': weight_result, 'warning': warning}, status=HTTP_200_OK)
 
 
 class PresetGetSkillWeightViewSet(viewsets.ViewSet):

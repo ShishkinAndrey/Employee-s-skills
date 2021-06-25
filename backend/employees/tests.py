@@ -6,7 +6,7 @@ from rest_framework.test import APIClient
 
 from employees.factories import EmployeeFactory, EmployeeSkillFactory
 from employees.models import Employee, EmployeeSkill
-from employees.serializer import EmployeeSerializer
+from employees.serializer import EmployeeSerializer, EmployeeSkillSerializer
 from skills.factories import SkillFactory
 
 
@@ -215,3 +215,45 @@ class EmployeeSkillCases(TestCase):
                 kwargs={'emp_id': self.employee.pk, 'skill_id': 2}
             ))
         self.assertEquals(response.status_code, 404)
+
+
+class EmployeeSkillWeightCases(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create(username='test_user', password='password')
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+        self.employee = EmployeeFactory()
+        self.skill = SkillFactory()
+
+    def create_test_employee_skill(self):
+        EmployeeSkillFactory(employee_id=EmployeeFactory(), skill_id=SkillFactory())
+
+    # def test_method_post_weight__auth_user(self):
+    #     for _ in range(2):
+    #         self.create_test_employee_skill()
+    #     emp = EmployeeSkill.objects.all()
+    #     ser = EmployeeSkillSerializer(emp, many=True)
+    #
+    #     response = self.client.post('get_employees_weight/?algorithm_name=exponential',
+    #                                 data={'data': [{"id": self.skill.pk,
+    #                                                 "seniority": random.randint(1, 3),
+    #                                                 "is_main": True}]},
+    #                                 # query_params={'algorithm_name': 'normalized'},
+    #                                 format='json')
+    #
+    #     self.assertEquals(response.status_code, 200)
+
+    # def test_method_post_weight_preset__auth_user(self):
+    #     for _ in range(2):
+    #         self.create_test_employee_skill()
+    #     emp = EmployeeSkill.objects.all()
+    #     ser = EmployeeSkillSerializer(emp, many=True)
+    #
+    #     response = self.client.post(reverse('get_employees_weight_with_preset', kwargs={'pk': self.employee.pk}),
+    #                                 data={'data': [{"id": self.skill.pk,
+    #                                                 "seniority": random.randint(1, 3),
+    #                                                 "is_main": True}]},
+    #                                 # query_params={'algorithm_name': 'normalized'},
+    #                                 format='json')
+    #
+    #     self.assertEquals(response.status_code, 200)
