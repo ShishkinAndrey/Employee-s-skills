@@ -49,7 +49,7 @@ employee_response_list = {
             examples={
                 "application/json":
                     {
-                        "employee_id": 0,
+                        "id": 0,
                         "firstname": "string",
                         "lastname": "string",
                         "skills": [

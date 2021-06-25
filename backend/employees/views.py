@@ -94,12 +94,12 @@ class EmployeeSkillViewSet(viewsets.ViewSet):
         get_employee_skills = EmployeeSkill.objects.filter(employee_id=pk).values('seniority_level',
                                                                                   'skill_id')
         emp_dict = {
-            'employee_id': get_employee['id'],
+            'id': get_employee['id'],
             'firstname': get_employee['firstname'],
             'lastname': get_employee['lastname'],
             'skills': get_employee_skills,
         }
-        return Response(emp_dict, status=HTTP_200_OK)
+        return Response(emp_dict)
 
     @swagger_auto_schema(
         operation_description="Method to add skills to employee",
