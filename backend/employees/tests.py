@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
-from django.shortcuts import get_object_or_404
+import random
 from rest_framework.test import APIClient
 
 from employees.factories import EmployeeFactory, EmployeeSkillFactory
@@ -122,4 +122,68 @@ class EmployeeSkillCases(TestCase):
 
         response = self.client.get(reverse('emp_skills-detail', kwargs={'pk': self.employee.pk}))
         self.assertEqual(response.status_code, 401)
+
+    def test_method_post_emp_skills__auth_user(self):
+        response = self.client.post(
+            reverse(
+                'emp_skills_post',
+                kwargs={'emp_id': self.employee.pk}
+            ),
+            data={'data':
+                      [
+                          {"seniority_level": random.randint(1, 3),
+                           'skill_id': self.skill.pk
+                           }
+                      ]
+            },
+            format='json')
+        self.assertEquals(response.status_code, 201)
+
+    def test_method_post_emp_skills__errors(self):
+        self.client.force_authenticate()
+        response = self.client.post(
+            reverse(
+                'emp_skills_post',
+                kwargs={'emp_id': self.employee.pk}
+            ),
+            data={'data':
+                      [
+                          {"seniority_level": random.randint(1, 3),
+                           'skill_id': self.skill.pk
+                           }
+                      ]
+            },
+            format='json')
+        self.assertEquals(response.status_code, 401)
+
+    def test_method_post_emp_skills__not_found(self):
+        response = self.client.post(
+            reverse(
+                'emp_skills_post',
+                kwargs={'emp_id': self.employee.pk}
+            ),
+            data={'data':
+                      [
+                          {"seniority_level": random.randint(1, 3),
+                           'skill_id': 2
+                           }
+                      ]
+            },
+            format='json')
+        self.assertEquals(response.status_code, 404)
+
+        response = self.client.post(
+            reverse(
+                'emp_skills_post',
+                kwargs={'emp_id': 2}
+            ),
+            data={'data':
+                [
+                    {"seniority_level": random.randint(1, 3),
+                     'skill_id': self.skill.pk
+                     }
+                ]
+            },
+            format='json')
+        self.assertEquals(response.status_code, 404)
 

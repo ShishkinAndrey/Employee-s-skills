@@ -63,7 +63,7 @@ employee_response_list = {
         )
     },
     'add_employee_skills': {
-            status.HTTP_200_OK: openapi.Response(
+            status.HTTP_201_CREATED: openapi.Response(
                 description="200: Successfully add skills to employee",
                 examples={
                     "application/json":

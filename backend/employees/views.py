@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST
+from rest_framework.status import HTTP_200_OK, HTTP_404_NOT_FOUND, HTTP_400_BAD_REQUEST, HTTP_201_CREATED
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from rest_framework.permissions import IsAuthenticated
@@ -149,7 +149,7 @@ class EmployeeSkillViewSet(viewsets.ViewSet):
                 created_ids.append(new_model.data['id'])
             else:
                 return Response('Incorrect data', status=HTTP_400_BAD_REQUEST)
-        return Response({'Created ids': created_ids}, status=HTTP_200_OK)
+        return Response({'Created ids': created_ids}, status=HTTP_201_CREATED)
 
     @swagger_auto_schema(
         operation_description="Method to edit employee skill",
