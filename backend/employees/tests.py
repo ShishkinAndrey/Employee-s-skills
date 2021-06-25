@@ -191,3 +191,27 @@ class EmployeeSkillCases(TestCase):
             ),
             data={"seniority_level": str(random.randint(1, 3))}, format='json')
         self.assertEquals(response.status_code, 400)
+
+    def test_method_delete_emp_skills__auth_user(self):
+        self.create_test_employee_skill()
+        response = self.client.delete(
+            reverse(
+                'emp_skills_delete',
+                kwargs={'emp_id': self.employee.pk, 'skill_id': self.skill.pk}
+            ))
+        self.assertEquals(response.status_code, 200)
+
+    def test_method_delete_emp_skills__errors(self):
+        self.create_test_employee_skill()
+        response = self.client.delete(
+            reverse(
+                'emp_skills_delete',
+                kwargs={'emp_id': 2, 'skill_id': self.skill.pk}
+            ))
+        self.assertEquals(response.status_code, 404)
+        response = self.client.delete(
+            reverse(
+                'emp_skills_delete',
+                kwargs={'emp_id': self.employee.pk, 'skill_id': 2}
+            ))
+        self.assertEquals(response.status_code, 404)
