@@ -82,7 +82,6 @@ class PresetCases(TestCase):
     def test_method_post_preset__404(self):
         sk = Skill.objects.all()
         ser = SkillSerializer(sk, many=True)
-        print(ser.data)
         data = {"name": 'test_name',
                 "description": 'test_description',
                 "skills": [{"skill_id": 2,

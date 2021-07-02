@@ -303,7 +303,8 @@ class PresetGetSkillWeightViewSet(viewsets.ViewSet):
                                              type=openapi.TYPE_STRING,
                                              enum=['exponential', 'normalized'],
                                              default='exponential',
-                                             )],
+                                             )
+                           ],
         responses=employee_response_list['preset_employees_weight']
     )
     def create(self, request, pk=None):
@@ -342,4 +343,4 @@ class PresetGetSkillWeightViewSet(viewsets.ViewSet):
             if query_skill:
                 query_dict['skills'] = [row for row in query_skill]
             weight_result.append(query_dict)
-        return Response({'data': weight_result, 'warning': warning})
+        return Response({'data': weight_result, 'warning': warning}, status=HTTP_200_OK)
