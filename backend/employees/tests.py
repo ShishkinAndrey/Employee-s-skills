@@ -8,6 +8,9 @@ from employees.factories import EmployeeFactory, EmployeeSkillFactory
 from employees.models import Employee, EmployeeSkill
 from employees.serializer import EmployeeSerializer, EmployeeSkillSerializer
 from skills.factories import SkillFactory
+from algorithms.factories import RequestSkillFactory, PresetFactory
+from algorithms.serializer import PresetSerializer, RequestSkillSerializer
+from algorithms.models import Preset, RequestSkill
 
 
 class EmployeeCases(TestCase):
@@ -74,19 +77,6 @@ class EmployeeSkillCases(TestCase):
 
     def test_emp_skills_list__auth_users_have_access(self):
         self.create_test_employee_skill()
-        employees_list = []
-        # get_employees = Employee.objects.all().values('id', 'firstname', 'lastname')
-        #
-        # for row in get_employees:
-        #     result = row
-        #     get_employees_skills = EmployeeSkill.objects \
-        #         .filter(employee_id=row['id']) \
-        #         .values('seniority_level',
-        #                 'skill_id'
-        #                 )
-        #     if get_employees_skills:
-        #         result['skills'] = get_employees_skills
-        #     employees_list.append(result)
         response = self.client.get(reverse('emp_skills-list'))
 
         self.assertEqual(response.status_code, 200)
@@ -102,16 +92,6 @@ class EmployeeSkillCases(TestCase):
 
     def test_emp_skills_retrieve__auth_users_have_access(self):
         self.create_test_employee_skill()
-        # queryset = Employee.objects.all().values('id', 'firstname', 'lastname')
-        # get_employee = get_object_or_404(queryset, pk=self.employee.pk)
-        # get_employee_skills = EmployeeSkill.objects.filter(employee_id=self.employee.pk).values('seniority_level',
-        #                                                                           'skill_id')
-        # emp_dict = {
-        #     'employee_id': get_employee['id'],
-        #     'firstname': get_employee['firstname'],
-        #     'lastname': get_employee['lastname'],
-        #     'skills': get_employee_skills,
-        # }
         response = self.client.get(reverse('emp_skills-detail', kwargs={'pk': self.employee.pk}), format='json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, self.row_response(response.data))
@@ -224,36 +204,36 @@ class EmployeeSkillWeightCases(TestCase):
         self.client.force_authenticate(user=self.user)
         self.employee = EmployeeFactory()
         self.skill = SkillFactory()
+        self.preset = PresetFactory()
 
     def create_test_employee_skill(self):
-        EmployeeSkillFactory(employee_id=EmployeeFactory(), skill_id=SkillFactory())
+        EmployeeSkillFactory(employee_id=EmployeeFactory(), skill_id=self.skill)
 
-    # def test_method_post_weight__auth_user(self):
-    #     for _ in range(2):
-    #         self.create_test_employee_skill()
-    #     emp = EmployeeSkill.objects.all()
-    #     ser = EmployeeSkillSerializer(emp, many=True)
-    #
-    #     response = self.client.post('get_employees_weight/?algorithm_name=exponential',
-    #                                 data={'data': [{"id": self.skill.pk,
-    #                                                 "seniority": random.randint(1, 3),
-    #                                                 "is_main": True}]},
-    #                                 # query_params={'algorithm_name': 'normalized'},
-    #                                 format='json')
-    #
-    #     self.assertEquals(response.status_code, 200)
+    def create_request_skill(self):
+        RequestSkillFactory(preset_id=self.preset, skill_id=self.skill)
 
-    # def test_method_post_weight_preset__auth_user(self):
-    #     for _ in range(2):
-    #         self.create_test_employee_skill()
-    #     emp = EmployeeSkill.objects.all()
-    #     ser = EmployeeSkillSerializer(emp, many=True)
-    #
-    #     response = self.client.post(reverse('get_employees_weight_with_preset', kwargs={'pk': self.employee.pk}),
-    #                                 data={'data': [{"id": self.skill.pk,
-    #                                                 "seniority": random.randint(1, 3),
-    #                                                 "is_main": True}]},
-    #                                 # query_params={'algorithm_name': 'normalized'},
-    #                                 format='json')
-    #
-    #     self.assertEquals(response.status_code, 200)
+    def test_method_post_weight__auth_user(self):
+        for _ in range(2):
+            self.create_test_employee_skill()
+
+        response = self.client.post('get_employees_weight/',
+                                    data={'data': [{"id": self.skill.pk,
+                                                    "seniority": random.randint(1, 3),
+                                                    "is_main": True}]},
+                                    query_params={'algorithm_name': 'normalized'},
+                                    format='json')
+
+        self.assertEquals(response.status_code, 200)
+
+    def test_method_post_weight_preset__auth_user(self):
+        for _ in range(2):
+            self.create_test_employee_skill()
+        self.create_request_skill()
+
+        response = self.client.post('/get_employees_weight_with_preset/self.preset.pk/',
+                                    data={'data': [{"id": self.skill.pk,
+                                                    "seniority": random.randint(1, 3),
+                                                    "is_main": True}]},
+                                    query_params={'algorithm_name': 'exponential'},
+                                    format='json')
+        self.assertEquals(response.status_code, 200)
