@@ -149,7 +149,8 @@ employee_response_list = {
                                     "seniority_level": 0,
                                     "skill_id": 0
                                 },
-                            ]
+                            ],
+                            "weight": 0
                         }
                 }
             ),
@@ -176,7 +177,8 @@ employee_response_list = {
                                         "seniority_level": 0,
                                         "skill_id": 0
                                     },
-                                ]
+                                ],
+                                "weight": 0
                             }
                     }
                 ),
